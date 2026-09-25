@@ -1,685 +1,128 @@
-Q-Less
+# Q-Less
 
-Your queue, on your phone.
+> **"Your queue, on your phone."**
 
-Q-Less is a telecom-powered virtual queue management system designed for high-volume service environments such as banks, clinics, government service centres, universities, and telecom shops.
+Q-Less is a telecom-powered virtual queue management system built for the **Africa's Talking Telecommunication Innovation Hackathon**.
 
-Instead of forcing customers to sit in a physical waiting area and listen for a paper ticket number, Q-Less lets them join a queue through USSD, receive a digital ticket and queue position, and get SMS notifications as their turn approaches. Staff manage the live queue from a simple web dashboard.
+- **Primary Category:** Customer Care & Support Automation
+- **Secondary Track:** Digital Inclusion & Accessibility
 
-This project is being built as a proof of concept for the Africa's Talking Telecommunication Innovation Hackathon: Build with Africa's Talking.
+---
 
-1. The Problem
+## 🌟 Overview & Core Concept
 
-A traditional service-centre queue often looks like this:
+In traditional service centers (banks, telecom shops, hospitals, government offices), customers are forced to wait in crowded physical waiting areas listening for ticket numbers to be called.
 
-Customer arrives
-      |
-      v
-Take paper ticket
-      |
-      v
-Sit and wait
-      |
-      v
-Listen for:
-"Ticket 27, Counter 3"
-      |
-      v
-Proceed to counter
+**Q-Less** turns physical waiting into a mobile, notification-driven experience using standard **USSD** and **SMS**:
+1. **Join via USSD:** Customers dial a USSD shortcode () to pick a service and join the virtual queue without needing an app or internet connection.
+2. **Digital Ticket:** The USSD response immediately displays their ticket number, live position, and estimated wait time, followed by a confirmation SMS.
+3. **SMS Alerts:** As earlier tickets are served, Q-Less automatically triggers an "Approaching Turn" SMS when the customer reaches position <= 2, instructing them to return to the service area.
+4. **Counter Assignment:** When staff call a customer from the web dashboard, an SMS is sent directing them to a specific counter (e.g. *"Q47, please proceed to Counter 2"*).
+5. **Staff Web Dashboard:** Staff manage queues, call next customers, complete, skip, recall, or assign counters using a real-time web interface.
 
-The customer has little visibility into:
+---
 
-How many people are ahead.
+## 📐 Architecture
 
-Roughly how long they may wait.
 
-Whether they can safely step away from the waiting area.
 
-When they should return.
+---
 
-What counter they should go to.
+## 🚀 Key Features
 
-Q-Less moves the queue from a paper ticket + physical waiting experience to a mobile notification experience.
+- **Standard USSD Integration:** Compatible with Africa's Talking USSD protocol ( /  responses).
+- **Multi-Mode SMS Service:** Configurable for  (local testing UI feed), , and  Africa's Talking environments.
+- **Smart Notification Engine:** Prevents notification spam by tracking  and only triggering alerts when position thresholds or counter calls occur.
+- **Duplicate Ticket Prevention:** Blocks multiple active tickets for the same phone number until previous tickets are completed/cancelled.
+- **Interactive USSD Simulator:** Built directly into the Staff Web Dashboard for seamless local hackathon demonstrations.
 
-2. The Q-Less Idea
+---
 
-                    Q-LESS
-       Telecom-powered virtual queue
+## 🛠️ Local Setup & Development
 
-            +-------------------+
-            |     CUSTOMER      |
-            +-------------------+
-                     |
-                  USSD
-                     |
-                     v
-            +-------------------+
-            |   QUEUE SERVICE   |
-            |   / FASTAPI API   |
-            +-------------------+
-                 |         |
-                 |         |
-                 v         v
-          +-----------+  +-----------+
-          | Queue DB  |  | SMS Service|
-          +-----------+  +-----------+
-                 ^             |
-                 |             v
-                 |        +----------+
-                 |        | Customer  |
-                 |        |   Phone   |
-                 |        +----------+
-                 |
-          +-------------------+
-          |   STAFF WEB APP   |
-          |   Queue Dashboard |
-          +-------------------+
+### Backend Setup
 
-Core components
+1. Navigate to backend:
 
-USSD Service
-Customer-facing entry point for joining and checking a queue.
+2. Create and activate virtual environment:
 
-Queue Service / Backend
-Owns queue state, ticket generation, position calculation, service counters, and notification triggers.
+3. Install dependencies:
 
-SMS Service
-Sends ticket confirmation, queue-position updates, approaching-turn alerts, and counter instructions.
+4. Run server:
 
-Staff Web Service
-A browser-based dashboard where staff can view and operate the queue.
 
-Database
-Stores customers/tickets, queues, services, counters, and queue events.
+### Frontend Setup
 
-3. Target User
+1. Navigate to frontend:
 
-Primary customer
+2. Install dependencies:
 
-A person visiting a high-volume service location who has a basic mobile phone or smartphone and wants to avoid spending the entire waiting period physically standing or sitting near a service counter.
+3. Run dev server:
 
-Primary staff user
+4. Open http://localhost:3000 in your browser.
 
-A bank teller, customer-service agent, receptionist, clinic administrator, government service officer, or other queue operator who needs a simple way to call and manage customers.
+---
 
-4. Example Use Case: Bank Branch
+## 🧪 Running Automated Tests
 
-Q-Less is demonstrated using a fictional bank branch, but the architecture is intended to be reusable across many service environments.
+Run backend tests:
 
-Traditional experience
 
-Customer -> gets Ticket 47 -> waits -> hears "47, Counter 1" -> walks to counter
+Run frontend build check:
 
-Q-Less experience
+> frontend@0.1.0 build
+> next build
 
-Customer
-   |
-   | Dial USSD
-   v
-+----------------------+
-| Q-Less                |
-| 1. Join queue         |Q-Less
-POST   /api/tickets/{ticket_id}/complete
-POST   /api/tickets/{ticket_id}/skip
-POST   /api/tickets/{ticket_id}/recall
-GET    /api/tickets/{ticket_id}
+▲ Next.js 16.3.6 (Turbopack)
+✓ Running next.config.ts took 40ms
 
-These are suggested interfaces, not a requirement to implement every endpoint exactly this way.
+  Creating an optimized production build ...
+✓ Compiled successfully in 7.3s
+  Running TypeScript ...
+  Finished TypeScript in 2.6s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/4) ...
+  Generating static pages using 3 workers (1/4)
+  Generating static pages using 3 workers (2/4)
+  Generating static pages using 3 workers (3/4)
+✓ Generating static pages using 3 workers (4/4) in 276ms
+  Finalizing page optimization ...
 
-Health endpoint
+Route (app)
+┌ ○ /
+└ ○ /_not-found
 
-GET /health
 
-Return a simple healthy response so the service can be verified during the demo/deployment.
+○  (Static)  prerendered as static content
 
-13. Hackathon Demo Plan
+---
 
-The demo should show the complete loop rather than a collection of disconnected screens.
+## 🌐 Deploying to Render
 
-Scene 1 — Problem
-
-Explain the traditional queue:
-
-A customer takes ticket 47 and has to sit around until someone announces ticket 47.
-
-Scene 2 — Join via USSD
-
-Open the Africa's Talking USSD simulator.
-
-Show:
-
-Q-Less
-1. Join Queue
-2. My Ticket
-3. Leave Queue
-
-Select a service and create a ticket.
-
-Scene 3 — Ticket appears
-
-USSD shows:
-
-Ticket: Q47
-Position: 8
-Estimated wait: ~40 mins
-
-Scene 4 — Real SMS
-
-The demo phone receives:
-
-Q-Less: You are Q47.
-There are 7 customers ahead of you.
-Estimated wait: ~40 minutes.
-
-Scene 5 — Staff dashboard
-
-Staff dashboard shows Q47 in the waiting queue.
-
-The operator repeatedly selects Call Next.
-
-Scene 6 — Approaching notification
-
-When Q47 reaches the configured threshold:
-
-Q-Less: You are approaching your turn.
-Please return to the service area.
-
-Scene 7 — Counter assignment
-
-Staff calls Q47 and assigns Counter 3.
-
-Customer receives:
-
-Q-Less: Q47, please proceed to Counter 3.
-
-Scene 8 — Closing line
-
-Q-Less turns a physical waiting queue into a mobile, notification-driven queue.
-Target demo environment: Africa's Talking USSD simulator + live SMS test phone + staff web dashboard
-| 2. My ticket          |
-| 3. Leave queue        |
-+----------------------+
-   |
-   | Select service
-   v
-+----------------------+
-| Ticket: Q47           |
-| Position: 8           |
-| Est. wait: ~40 mins   |
-+----------------------+
-   |
-   | SMS
-   v
-"You are Q47. 7 people are ahead of you."
-   |
-   | Queue progresses
-   v
-"You are approaching your turn. Please return."
-   |
-   | Staff calls ticket
-   v
-"Q47: Please proceed to Counter 3."
-
-The important product idea is not the bank itself. The bank is a demo context for a reusable queue system.
-
-5. Core MVP Features
-
-Customer — USSD
-
-Start Q-Less session.
-
-Select Join Queue.
-
-Select a service.
-
-Receive a queue ticket number.
-
-See current queue position.
-
-See estimated waiting time.
-
-Check ticket status.
-
-Leave/cancel a queue entry.
-
-Customer — SMS
-
-Send SMS notifications for:
-
-Queue joined / ticket issued.
-
-Queue position / estimated wait.
-
-Customer is approaching their turn.
-
-Customer is called.
-
-Customer's counter assignment.
-
-Optional cancellation/expiry messages.
-
-Staff — Web Dashboard
-
-View active queues.
-
-See current ticket being served.
-
-See waiting tickets.
-
-Call the next customer.
-
-Assign/select a counter.
-
-Mark a ticket as completed.
-
-Skip a ticket.
-
-Recall a ticket.
-
-View basic queue statistics.
-
-Backend
-
-Ticket generation.
-
-Queue ordering.
-
-Position calculation.
-
-Estimated waiting-time calculation.
-
-Queue state transitions.
-
-Counter assignment.
-
-SMS notification triggers.
-
-Basic audit/event logging.
-
-6. Suggested USSD Flow
-
-The exact shortcode/menu wording can change depending on the Africa's Talking environment, but the logical flow is:
-
-USSD START
-    |
-    v
-Q-Less
-1. Join Queue
-2. My Ticket
-3. Leave Queue
-    |
-    +---- 1 ----> Select Service
-    |                 |
-    |                 +--> Customer Care
-    |                 +--> Account Services
-    |                 +--> Payments
-    |                 +--> Other
-    |                 |
-    |                 v
-    |            CREATE TICKET
-    |                 |
-    |                 v
-    |           Show ticket + position
-    |                 |
-    |                 v
-    |             End session
-    |
-    +---- 2 ----> Show ticket + live position
-    |
-    +---- 3 ----> Confirm leave queue
-
-For the hackathon PoC, the USSD flow can be demonstrated through the available sandbox/simulator while the SMS can be demonstrated on a real test phone.
-
-7. Queue Logic
-
-The MVP uses a straightforward first-in-first-out model:
-
-WAITING -> CALLED -> SERVING -> COMPLETED
-              |
-              +-> SKIPPED
-              |
-              +-> RECALLED
-              |
-              +-> CANCELLED
-
-Example
-
-Queue:
-Q23  SERVING  Counter 2
-Q24  WAITING
-Q25  WAITING
-Q26  WAITING
-Q27  WAITING
-
-Staff clicks Call Next:
-
-Q23 -> COMPLETED
-Q24 -> CALLED -> Counter 1
-
-Q27's position changes automatically as earlier tickets leave the queue.
-
-8. Estimated Wait Time
-
-For the MVP, use a simple estimate:
-
-Estimated wait ~= people ahead x average service time
-
-Example:
-
-4 people ahead
-x 8 minutes average service time
-= ~32 minutes
-
-The value is clearly an estimate, not a guaranteed appointment time.
-
-A later version can calculate rolling averages from real completed tickets.
-
-9. Notification Logic
-
-A practical MVP rule set:
-
-Ticket created
-    -> confirmation SMS
-
-Position changes materially
-    -> optional update SMS
-
-Position <= configured threshold (e.g. 2)
-    -> "You are approaching" SMS
-
-Staff calls ticket
-    -> "Proceed to Counter X" SMS
-
-Ticket completed
-    -> completion SMS (optional)
-
-The threshold should be configurable rather than hard-coded into the product design.
-
-10. System Architecture
-
-                         +----------------------+
-                         |       CUSTOMER       |
-                         |  Basic phone / phone |
-                         +----------+-----------+
-                                    |
-                              USSD interaction
-                                    |
-                                    v
-                         +----------------------+
-                         |  USSD PROVIDER /     |
-                         |  SANDBOX SIMULATOR   |
-                         +----------+-----------+
-                                    |
-                               webhook/request
-                                    |
-                                    v
-+-------------------+      +----------------------+      +------------------+
-|                   |      |                      |      |                  |
-|  STAFF WEB APP    +----->+   Q-LESS BACKEND    +----->+   SMS SERVICE    |
-|  Queue Dashboard  |      |      FastAPI        |      |  Africa's Talking|
-|                   |<-----+                      |      |                  |
-+-------------------+      +----------+-----------+      +--------+---------+
-                                      |
-                                      |
-                                      v
-                             +------------------+
-                             |    DATABASE      |
-                             | SQLite for PoC   |
-                             +------------------+
-
-Recommended initial stack
-
-Frontend:       Next.js / React
-Backend:        FastAPI (Python)
-Database:       SQLite for MVP
-USSD:           Africa's Talking USSD integration / sandbox
-SMS:            Africa's Talking SMS integration
-Styling:        Simple responsive UI
-Deployment:     Local first; deploy only what is needed for the demo
-
-The stack is intentionally lightweight. The goal is to prove the user experience and system flow rather than build production infrastructure.
-
-11. Proposed Repository Structure
-
-q-less/
-|
-+-- README.md
-+-- PRD.md
-+-- .env.example
-+-- .gitignore
-|
-+-- backend/
-|   +-- app/
-|       +-- main.py
-|       +-- api/
-|       |   +-- ussd.py
-|       |   +-- queues.py
-|       |   +-- tickets.py
-|       |   +-- staff.py
-|       +-- services/
-|       |   +-- queue_service.py
-|       |   +-- sms_service.py
-|       |   +-- notification_service.py
-|       +-- models/
-|       +-- db/
-|       +-- tests/
-|
-+-- frontend/
-|   +-- app/
-|   +-- components/
-|   +-- lib/
-|   +-- tests/
-|
-+-- docs/
-    +-- DEMO_SCRIPT.md
-    +-- ARCHITECTURE.md
-
-The structure can be simplified further during the first implementation sprint. Do not create folders merely for the sake of architecture.
-
-12. API-Level Responsibilities
-
-USSD endpoint
-
-Receives USSD requests and returns menu text.
-
-Conceptually:
-
-POST /api/ussd
-
-The endpoint should:
-
-Identify the session.
-
-Identify the customer/mobile number provided by the USSD channel.
-
-Determine the current menu state.
-
-Return the appropriate USSD response.
-
-Create/update a queue ticket when appropriate.
-
-Staff API
-
-Example endpoints:
-
-GET    /api/queues
-GET    /api/queues/{queue_id}
-POST   /api/queues/{queue_id}/tickets
-POST   /api/tickets/{ticket_id}/call
-POST   /api/tickets/{ticket_id}/complete
-POST   /api/tickets/{ticket_id}/skip
-POST   /api/tickets/{ticket_id}/recall
-GET    /api/tickets/{ticket_id}
-
-These are suggested interfaces, not a requirement to implement every endpoint exactly this way.
-
-Health endpoint
-
-GET /health
-
-Return a simple healthy response so the service can be verified during the demo/deployment.
-
-13. Hackathon Demo Plan
-
-The demo should show the complete loop rather than a collection of disconnected screens.
-
-Scene 1 — Problem
-
-Explain the traditional queue:
-
-A customer takes ticket 47 and has to sit around until someone announces ticket 47.
-
-Scene 2 — Join via USSD
-
-Open the Africa's Talking USSD simulator.
-
-Show:
-
-Q-Less
-1. Join Queue
-2. My Ticket
-3. Leave Queue
-
-Select a service and create a ticket.
-
-Scene 3 — Ticket appears
-
-USSD shows:
-
-Ticket: Q47
-Position: 8
-Estimated wait: ~40 mins
-
-Scene 4 — Real SMS
-
-The demo phone receives:
-
-Q-Less: You are Q47.
-There are 7 customers ahead of you.
-Estimated wait: ~40 minutes.
-
-Scene 5 — Staff dashboard
-
-Staff dashboard shows Q47 in the waiting queue.
-
-The operator repeatedly selects Call Next.
-
-Scene 6 — Approaching notification
-
-When Q47 reaches the configured threshold:
-
-Q-Less: You are approaching your turn.
-Please return to the service area.
-
-Scene 7 — Counter assignment
-
-Staff calls Q47 and assigns Counter 3.
-
-Customer receives:
-
-Q-Less: Q47, please proceed to Counter 3.
-
-Scene 8 — Closing line
-
-Q-Less turns a physical waiting queue into a mobile, notification-driven queue.
-
-14. Why Telecom Matters
-
-Q-Less is deliberately not just a web queue application.
-
-Its key value is the combination of:
-
-USSD
-  +
-SMS
-  +
-Web staff operations
-  +
-Queue state
-
-USSD means the customer can interact without installing an application. SMS provides asynchronous notifications that can reach the customer's phone outside the queue UI.
-
-This also makes Q-Less relevant to digital inclusion/accessibility as a secondary theme, while its primary hackathon category is Customer Care & Support Automation.
-
-15. Non-Goals for the MVP
-
-Do not expand the first version into:
-
-Native Android/iOS apps.
-
-Full bank integrations.
-
-Payment processing.
-
-Complex identity verification.
-
-Multi-country telecom operations.
-
-Advanced machine learning.
-
-Production-grade analytics.
-
-Complex role-based enterprise administration.
-
-Hardware ticket kiosks.
-
-A full appointment-booking platform.
-
-Those can be future directions.
-
-16. Success Criteria
-
-Q-Less is successful as a hackathon PoC when a judge can watch one continuous scenario and see:
-
-1. Customer joins queue via USSD
-2. Ticket is created
-3. Queue position is visible
-4. Staff manages queue from web dashboard
-5. Customer receives SMS notification
-6. Queue advances
-7. Customer receives approaching-turn notification
-8. Customer receives counter instruction
-
-The entire story should work reliably with test data from start to finish.
-
-17. Product Direction After the Hackathon
-
-Potential extensions include:
-
-Multi-branch queues
-       |
-       +-- Bank branches
-       +-- Hospitals / clinics
-       +-- Government offices
-       +-- Universities
-       +-- Telecom shops
-       +-- SACCOs
-
-Advanced version
-       |
-       +-- Dynamic wait-time prediction
-       +-- Service-specific routing
-       +-- Appointment + queue hybrid
-       +-- Customer feedback
-       +-- Queue analytics
-       +-- Staff performance analytics
-       +-- Multi-language USSD/SMS
-       +-- Accessibility features
-
-The hackathon MVP should remain small.
-
-18. Build Principle
-
-Prove the queue experience first. Then improve the system.
-
-The primary objective is not to build the largest queue platform. It is to demonstrate a believable and useful telecom-enabled alternative to physical waiting.
-
-19. Current Status
-
-Stage: Hackathon PoC / MVP
-
-Primary track: Customer Care & Support Automation
-
-Secondary relevance: Digital Inclusion & Accessibility
-
-Target demo environment: Africa's Talking USSD simulator + live SMS test phone + staff web dashboard
+Q-Less includes a preconfigured  Blueprint defining two independent Docker web services ( and ) on the                total        used        free      shared  buff/cache   available
+Mem:         8150116      763880     5704200         540     1975092     7386236
+Swap:              0           0           0 plan in .
+
+---
+
+## 🎬 Golden Path Demo Script
+
+1. **Open Staff Dashboard:** Visit . Observe "Mombasa Service Centre" with empty queues.
+2. **Join Queue via USSD:**
+   - In the **USSD Phone Simulator** panel on the right, keep phone number  and click **Dial *384#**.
+   - Select option  (Join Queue) and click **Send**.
+   - Select option  (Customer Care) and click **Send**.
+   - The USSD screen returns .
+3. **Observe Ticket & Confirmation SMS:**
+   - Ticket **C01** appears immediately under **Waiting Queue**.
+   - In the **Live SMS Feed**, observe the Ticket Confirmation SMS.
+4. **Join Second Customer:**
+   - Change phone number in simulator to  and dial  ->  -> .
+   - Ticket **C02** is generated at Position 2.
+5. **Call Next Customer:**
+   - On the Staff Dashboard, select **Counter 1** and click **📢 Call Next**.
+   - Ticket **C01** moves to **Now Serving** at Counter 1.
+   - An SMS notification is sent to : *"Q-Less: Ticket C01, please proceed to Counter 1."*
+   - Ticket **C02** moves to Position 1, triggering an "Approaching Turn" SMS alert.
+6. **Complete Ticket:**
+   - Click **✓ Complete** on Ticket C01.
