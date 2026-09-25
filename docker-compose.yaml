@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: q-less-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=development
+      - DATABASE_URL=sqlite:////tmp/qless.db
+      - AT_SMS_MODE=mock
+      - AFRICASTALKING_USERNAME=sandbox
+      - AFRICASTALKING_API_KEY=mock_key
+      - AFRICASTALKING_SENDER_ID=QLess
+      - APPROACHING_THRESHOLD=2
+      - CORS_ORIGINS=*
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: q-less-staff
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
