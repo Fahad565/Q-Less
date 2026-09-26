@@ -4,21 +4,23 @@ services:
     runtime: docker
     plan: free
     region: frankfurt
-    dockerContext: backend
-    dockerfilePath: Dockerfile
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: APP_ENV
         value: production
       - key: DATABASE_URL
-        value: sqlite:////tmp/qless.db
+        scope: secret
       - key: AT_SMS_MODE
         value: mock
       - key: AFRICASTALKING_USERNAME
         value: sandbox
       - key: AFRICASTALKING_API_KEY
-        value: mock_key
+        scope: secret
       - key: AFRICASTALKING_SENDER_ID
         value: QLess
+      - key: APPROACHING_THRESHOLD
+        value: "2"
       - key: CORS_ORIGINS
         value: "*"
 
@@ -27,8 +29,8 @@ services:
     runtime: docker
     plan: free
     region: frankfurt
-    dockerContext: frontend
-    dockerfilePath: Dockerfile
+    dockerContext: ./frontend
+    dockerfilePath: ./frontend/Dockerfile
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://q-less-api.onrender.com
