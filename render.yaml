@@ -14,11 +14,11 @@ services:
       - key: AT_SMS_MODE
         value: mock
       - key: AFRICASTALKING_USERNAME
-        value: sandbox
+        scope: secret
       - key: AFRICASTALKING_API_KEY
         scope: secret
       - key: AFRICASTALKING_SENDER_ID
-        value: QLess
+        value: ""
       - key: APPROACHING_THRESHOLD
         value: "2"
       - key: CORS_ORIGINS
