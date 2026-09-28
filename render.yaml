@@ -12,7 +12,7 @@ services:
       - key: DATABASE_URL
         scope: secret
       - key: AT_SMS_MODE
-        value: mock
+        value: live
       - key: AFRICASTALKING_USERNAME
         scope: secret
       - key: AFRICASTALKING_API_KEY
