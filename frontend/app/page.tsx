@@ -48,6 +48,9 @@ interface SMSLog {
   phone_number: string;
   message: string;
   type: string;
+  provider?: string;
+  status?: string;
+  error?: string | null;
   timestamp: string;
 }
 
@@ -137,21 +140,6 @@ export default function Dashboard() {
     }
   };
 
-  const handleAssignCounter = async (ticketId: number, counterId: number) => {
-    try {
-      const res = await fetch(`${API_BASE}/api/tickets/${ticketId}/assign-counter`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ counter_id: counterId })
-      });
-      if (!res.ok) throw new Error("Failed to assign counter");
-      await fetchQueueData();
-      await fetchSMSLogs();
-    } catch (e) {
-      alert("Error assigning counter");
-    }
-  };
-
   // USSD Simulation Handlers
   const sendUssdRequest = async (textVal: string) => {
     try {
@@ -206,6 +194,8 @@ export default function Dashboard() {
   const activeTickets = queue?.tickets || [];
   const servingTickets = activeTickets.filter((t) => t.status === "CALLED" || t.status === "SERVING");
   const waitingTickets = activeTickets.filter((t) => t.status === "WAITING");
+
+  const latestProvider = smsLogs.length > 0 && smsLogs[0].provider ? smsLogs[0].provider : "SMS Provider";
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans">
@@ -427,13 +417,13 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* MOCK SMS NOTIFICATION LOGS */}
+          {/* SMS NOTIFICATION LOGS */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-xl flex-1 flex flex-col">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-sm font-bold tracking-wider text-amber-400 uppercase flex items-center gap-2">
                 📩 Live SMS Feed
               </h2>
-              <span className="text-xs text-slate-500 font-mono">Mock Provider</span>
+              <span className="text-xs text-slate-400 font-mono font-semibold">{latestProvider}</span>
             </div>
 
             <div className="bg-slate-950 border border-slate-700 rounded-lg p-3 flex-1 overflow-y-auto max-h-[350px] space-y-3 font-mono text-xs">
@@ -444,9 +434,17 @@ export default function Dashboard() {
                   <div key={log.id} className="bg-slate-900 border border-slate-800 rounded p-2.5 space-y-1">
                     <div className="flex justify-between items-center text-[10px] text-slate-400 border-b border-slate-800/80 pb-1">
                       <span className="text-amber-400 font-semibold">{log.phone_number}</span>
-                      <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-slate-500">{log.provider || "SMS Provider"}</span>
+                        <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
+                      </div>
                     </div>
                     <div className="text-slate-200 leading-snug pt-1">{log.message}</div>
+                    {log.error && (
+                      <div className="text-[10px] text-rose-400 pt-1 border-t border-slate-800/60">
+                        Error: {log.error}
+                      </div>
+                    )}
                   </div>
                 ))
               )}
