@@ -61,12 +61,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // USSD Simulator State
-  const [ussdPhone, setUssdPhone] = useState<string>("+254712345678");
-  const [ussdInput, setUssdInput] = useState<string>("");
-  const [ussdScreen, setUssdScreen] = useState<string>("");
-  const [ussdSessionActive, setUssdSessionActive] = useState<boolean>(false);
-
   const fetchQueueData = async () => {
     try {
       const res = await fetch(`${API_BASE}/api/queues/1`);
@@ -140,49 +134,6 @@ export default function Dashboard() {
     }
   };
 
-  // USSD Simulation Handlers
-  const sendUssdRequest = async (textVal: string) => {
-    try {
-      const params = new URLSearchParams();
-      params.append("sessionId", "dash_session_123");
-      params.append("serviceCode", "*384#");
-      params.append("phoneNumber", ussdPhone);
-      params.append("text", textVal);
-
-      const res = await fetch(`${API_BASE}/api/ussd`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params.toString()
-      });
-
-      const responseText = await res.text();
-      setUssdScreen(responseText);
-      if (responseText.startsWith("END")) {
-        setUssdSessionActive(false);
-      } else {
-        setUssdSessionActive(true);
-      }
-      fetchQueueData();
-      fetchSMSLogs();
-    } catch (e) {
-      setUssdScreen("END Network error calling USSD service.");
-      setUssdSessionActive(false);
-    }
-  };
-
-  const startUssdSession = () => {
-    setUssdInput("");
-    sendUssdRequest("");
-  };
-
-  const submitUssdInput = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!ussdInput.trim()) return;
-    const newInput = ussdInput;
-    setUssdInput("");
-    sendUssdRequest(newInput);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
@@ -206,7 +157,12 @@ export default function Dashboard() {
             Q-LESS
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">{queue?.name || "Mombasa Service Centre"}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-white">{queue?.name || "Mombasa Service Centre"}</h1>
+              <span className="bg-slate-700 text-slate-300 text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-slate-600">
+                USSD via Africa's Talking Sandbox
+              </span>
+            </div>
             <p className="text-xs text-slate-400">Virtual Queue Management & Customer Support</p>
           </div>
         </div>
@@ -249,14 +205,10 @@ export default function Dashboard() {
         {/* LEFT & CENTER SURFACES: QUEUE MANAGEMENT */}
         <div className="lg:col-span-8 flex flex-col gap-6">
 
-          {/* NOW SERVING SECTION */}
+          {/* CURRENTLY SERVING SECTION */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
-            <h2 className="text-sm font-bold tracking-wider text-emerald-400 uppercase mb-4 flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-              </span>
-              Now Serving
+            <h2 className="text-sm font-bold tracking-wider text-slate-300 uppercase mb-4 flex items-center gap-2">
+              🟢 Currently Serving
             </h2>
 
             {servingTickets.length === 0 ? (
@@ -357,65 +309,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* RIGHT SURFACE: USSD SIMULATOR & SMS NOTIFICATION LOGS */}
+        {/* RIGHT SURFACE: SMS NOTIFICATION LOGS */}
         <div className="lg:col-span-4 flex flex-col gap-6">
-
-          {/* USSD SIMULATOR DRAWER */}
-          <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-xl">
-            <h2 className="text-sm font-bold tracking-wider text-sky-400 uppercase mb-3 flex items-center gap-2">
-              📱 USSD Phone Simulator
-            </h2>
-            <p className="text-xs text-slate-400 mb-4">
-              Simulate Africa's Talking USSD requests directly in your browser to test queue joining and checking.
-            </p>
-
-            <div className="bg-slate-950 border border-slate-700 rounded-lg p-4 mb-4 font-mono text-sm">
-              <div className="text-xs text-slate-500 mb-2 border-b border-slate-800 pb-1 flex justify-between">
-                <span>SIMULATOR SCREEN</span>
-                <span>*384#</span>
-              </div>
-
-              <div className="min-h-[120px] whitespace-pre-wrap text-emerald-400">
-                {ussdScreen || "Click 'Dial *384#' to begin a USSD session."}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={ussdPhone}
-                  onChange={(e) => setUssdPhone(e.target.value)}
-                  placeholder="Phone number"
-                  className="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-mono flex-1 focus:outline-none focus:border-sky-500"
-                />
-                <button
-                  onClick={startUssdSession}
-                  className="bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold px-3 py-1.5 rounded transition"
-                >
-                  Dial *384#
-                </button>
-              </div>
-
-              {ussdSessionActive && (
-                <form onSubmit={submitUssdInput} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={ussdInput}
-                    onChange={(e) => setUssdInput(e.target.value)}
-                    placeholder="Enter menu choice..."
-                    className="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-mono flex-1 focus:outline-none focus:border-emerald-500"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded transition"
-                  >
-                    Send
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
 
           {/* SMS NOTIFICATION LOGS */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-xl flex-1 flex flex-col">
@@ -426,7 +321,7 @@ export default function Dashboard() {
               <span className="text-xs text-slate-400 font-mono font-semibold">{latestProvider}</span>
             </div>
 
-            <div className="bg-slate-950 border border-slate-700 rounded-lg p-3 flex-1 overflow-y-auto max-h-[350px] space-y-3 font-mono text-xs">
+            <div className="bg-slate-950 border border-slate-700 rounded-lg p-3 flex-1 overflow-y-auto min-h-[400px] space-y-3 font-mono text-xs">
               {smsLogs.length === 0 ? (
                 <div className="text-slate-600 text-center py-6">No SMS notifications sent yet.</div>
               ) : (
