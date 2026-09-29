@@ -14,7 +14,7 @@ Q-Less is a telecom-powered virtual queue management system built for the **Afri
 In traditional service centers (banks, telecom shops, hospitals, government offices), customers are forced to wait in crowded physical waiting areas listening for ticket numbers to be called.
 
 **Q-Less** turns physical waiting into a mobile, notification-driven experience using standard **USSD** and **SMS**:
-1. **Join via USSD:** Customers dial a USSD shortcode (`*384#`) to pick a service and join the virtual queue without needing an app or internet connection.
+1. **Join via USSD:** Customers dial a USSD shortcode (`*384#`) via Africa's Talking Sandbox / Web Simulator to pick a service and join the virtual queue without needing an app or internet connection.
 2. **Digital Ticket:** The USSD response immediately displays their ticket number, live position, and estimated wait time, followed by a confirmation SMS.
 3. **SMS Alerts:** As earlier tickets are served, Q-Less automatically triggers an "Approaching Turn" SMS when the customer reaches position <= 2, instructing them to return to the service area.
 4. **Counter Assignment:** When staff call a customer from the web dashboard, an SMS is sent directing them to a specific counter (e.g. *"Q-Less: Ticket C01, please proceed to Counter 1"*).
@@ -52,7 +52,7 @@ AFRICASTALKING_SENDER_ID=
   - Optional Sender ID (`AFRICASTALKING_SENDER_ID`). If omitted or empty, Q-Less will omit the sender parameter and allow Africa's Talking to use your account's default configuration or respond accordingly.
 
 > **Note on USSD vs SMS:**
-> For the Q-Less demo, USSD remains hosted on Africa's Talking Sandbox / Web Simulator, while SMS transitions to Live mode to deliver real SMS messages to actual mobile handsets.
+> For the Q-Less demo, USSD interactions are hosted separately on the Africa's Talking Sandbox Web USSD Simulator, while SMS transitions to Live mode to deliver real SMS messages to actual mobile handsets. The Staff Dashboard operates strictly as the queue management interface for service center staff.
 
 ---
 
@@ -104,7 +104,9 @@ npm --prefix frontend run build
 You can test live SMS delivery independently of the queue flow using `POST /api/notifications/test`:
 
 ```bash
-curl -X POST "http://localhost:8000/api/notifications/test"   -H "Content-Type: application/json"   -d '{
+curl -X POST "http://localhost:8000/api/notifications/test" \
+  -H "Content-Type: application/json" \
+  -d '{
     "phone_number": "+254712345678",
     "message": "Q-Less live SMS test message."
   }'
@@ -124,18 +126,19 @@ Q-Less includes a preconfigured `render.yaml` Blueprint defining the API and Sta
 
 ## 🎬 Golden Path Demo Script
 
-1. **Open Staff Dashboard:** Visit `http://localhost:3000`. Observe "Mombasa Service Centre" with empty queues.
-2. **Join Queue via USSD:**
-   - In the **USSD Phone Simulator** panel on the right, enter your real Kenyan phone number (e.g., `+2547XXXXXXXX` or `07XXXXXXXX`) and click **Dial *384#**.
-   - Select option `1` (Join Queue) and click **Send**.
-   - Select option `1` (Customer Care) and click **Send**.
-   - The USSD screen returns `Ticket Created! Ticket Number: C01`.
+1. **Open Staff Dashboard:** Visit `http://localhost:3000`. Observe "Mombasa Service Centre" with empty queues and the **Live SMS Feed** on the right.
+2. **Join Queue via USSD (Africa's Talking Sandbox Web Simulator):**
+   - Open Africa's Talking Sandbox Web USSD Simulator.
+   - Enter service code `*384#` and dial.
+   - Select option `1` (Join Queue) and send.
+   - Select option `1` (Customer Care) and send.
+   - The USSD response returns `Ticket Created! Ticket Number: C01`.
 3. **Observe Confirmation SMS:**
-   - Ticket **C01** appears immediately under **Waiting Queue**.
-   - In `AT_SMS_MODE=live`, a real SMS confirmation arrives on your mobile phone!
+   - Ticket **C01** appears immediately under **Waiting Queue** on the Staff Dashboard.
+   - In `AT_SMS_MODE=live`, a real SMS confirmation arrives on the customer's mobile phone and appears in the Live SMS Feed!
 4. **Call Next Customer:**
    - On the Staff Dashboard, select **Counter 1** and click **📢 Call Next**.
    - Ticket **C01** moves to **Now Serving** at Counter 1.
-   - An SMS notification is sent to your phone: *"Q-Less: Ticket C01, please proceed to Counter 1."*
+   - An SMS notification is sent to the phone: *"Q-Less: Ticket C01, please proceed to Counter 1."*
 5. **Complete Ticket:**
    - Click **✓ Complete** on Ticket C01.
